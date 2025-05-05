@@ -1,13 +1,16 @@
-
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
+    networks:
+      - app-net
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
     image: wurstmeister/kafka:2.13-2.8.1
+    networks:
+      - app-net
     depends_on:
       - zookeeper
     ports:
@@ -20,14 +23,11 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    healthcheck:
-      test: ["CMD", "bash", "-c", "echo > /dev/tcp/localhost/9092"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   producer:
     build: ./producer
+    networks:
+      - app-net
     depends_on:
       - kafka
     environment:
@@ -36,11 +36,15 @@ services:
 
   cassandra:
     image: cassandra:4.1
+    networks:
+      - app-net
     ports:
       - "9042:9042"
 
   spark:
     image: bitnami/spark:latest
+    networks:
+      - app-net
     ports:
       - "4040:4040"
     depends_on:
@@ -48,3 +52,6 @@ services:
       - cassandra
     volumes:
       - ./spark_scripts:/opt/spark_apps
+
+networks:
+  app-net:
