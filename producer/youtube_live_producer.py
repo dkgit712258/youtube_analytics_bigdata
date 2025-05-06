@@ -37,7 +37,7 @@ def fetch_trending_videos():
         "part": "snippet,statistics",
         "chart": "mostPopular",
         "regionCode": REGION,
-        "maxResults": 20,
+        "maxResults": 200,
         "key": API_KEY
     }
     response = requests.get(url, params=params)
@@ -63,4 +63,4 @@ while True:
             print(f"Sent: {msg['title']}")
         except Exception as e:
             print("Error:", e)
-    time.sleep(300)
+    time.sleep(10) #TODO: less time for testing
